@@ -4,8 +4,7 @@ import requests
 import time
 import subprocess
 import os
-import urllib
-
+import urllib.request
 from settings import Settings
 
 requests.packages.urllib3.disable_warnings()
@@ -56,38 +55,37 @@ def run_command(offset, name, from_id, cmd):
     elif cmd == '/help':  # Ответ на help
         send_text(from_id, 'No help today. Sorry.')  # Ответ
 
-    elif 'file_id' in cmd:
+    elif 'file_id' in cmd:  # Действие если прислан файл
         request = requests_http('/getFile', {'file_id': cmd['file_id']})
 
         if not request.json()['ok']:
             return False
 
-        file_mime = cmd['mime_type']
-        if file_mime != 'application/x-bittorrent':
-            send_text(from_id, "Mime type file\'s is not true")  # ему отправляется соответствующее уведомление
-            return False
-            # continue # и цикл переходит к следующему обновлению
-        file_name = cmd['file_name']
-
-        torrent_file = request.json()['result']
-        file_path = torrent_file['file_path']
-
-        tfile = urllib.urlopen(Settings.urlFile + Settings.token + '/' + file_path).read()
-
-        dir_torrent_file = '/mount/flash/Torrent/file/'
-
-        if not os.path.isdir(dir_torrent_file):
-            send_text(from_id, "Dir torrent file is not dir")
-            return False
-        f = open(dir_torrent_file + file_name, "wb")
-        f.write(tfile)
-        f.close()
-
+        loadFile(request.json()['result'], cmd['file_name'], cmd['mime_type'], from_id)
         # log_event(request.json()['result'])
         send_text(from_id, 'Ok!')  # Отправка ответа
 
     else:
         send_text(from_id, 'Got it.')  # Отправка ответа
+
+
+def loadFile(torrentFile, fileName, mymeType, fromId):
+    dirTorrentFile = '/mount/flash/Torrent/file/'
+
+    if mymeType != 'application/x-bittorrent':
+        send_text(fromId, "Mime type file\'s is not true")  # ему отправляется соответствующее уведомление
+        return False
+
+    filePath = torrentFile['file_path']
+
+    tfile = urllib.request.urlopen(Settings.urlFile + Settings.token + '/' + filePath).read()
+
+    if not os.path.isdir(dirTorrentFile):
+        send_text(fromId, "Dir torrent file is not dir")
+        return False
+    f = open(dirTorrentFile + fileName, "wb")
+    f.write(tfile)
+    f.close()
 
 
 def log_event(text):
