@@ -1,0 +1,8 @@
+app:
+  build: ./docker/app
+  container_name: pi-app
+rtorrent:
+  build: ./docker/rtorrent
+  container_name: pi-rtorrent
+  ports:
+    - "0.0.0.0:80:80"
