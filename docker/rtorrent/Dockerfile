@@ -21,3 +21,5 @@ RUN chown -R rtorrent:rtorrent /home/rtorrent
 WORKDIR     /etc/service/rtorrent
 ADD         ./run_rtorrent.sh /etc/service/rtorrent/run
 RUN         chmod +x ./run
+
+CMD ["/etc/service/rtorrent/run"]

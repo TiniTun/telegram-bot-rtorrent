@@ -1,0 +1,16 @@
+min_peers = 1
+max_peers = 30.
+download_rate = 0
+upload_rate = 0
+directory = /mount/flash/
+session = /mount/flash/Torrent/.rt/
+port_range = 40890-40890
+port_random = no
+check_hash = yes
+session_save = yes
+encryption = allow_incoming,enable_retry,prefer_plaintext
+use_udp_trackers = yes
+dht = auto
+dht_port = 6881
+encoding_list = UTF-8
+scgi_port = 127.0.0.1:5005
