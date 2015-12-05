@@ -6,5 +6,8 @@ app:
 rtorrent:
   build: ./docker/rtorrent
   container_name: pi-rtorrent
+  volumes:
+    - ~/test/rtorrent:/downloads
   ports:
-    - "0.0.0.0:80:80"
+    - "49160:49160/udp"
+    - "49161:49161"

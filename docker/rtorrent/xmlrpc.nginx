@@ -1,0 +1,12 @@
+server {
+	listen 80 default_server;
+
+	server_name localhost;
+
+	location /RPC2 {
+            include scgi_params;
+	        scgi_pass 127.0.0.1:5000;
+	        scgi_var SCRIPT_NAME  /RPC2;
+	}
+
+}
