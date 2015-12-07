@@ -1,13 +1,17 @@
-FROM ubuntu
+FROM ubuntu:14.04
 USER root
 
 # add ffmpeg ppa
-ADD ./ffmpeg-next.list /etc/apt/sources.list.d/ffmpeg-next.list
+#ADD ./ffmpeg-next.list /etc/apt/sources.list.d/ffmpeg-next.list + apt-get install ffmpeg
 
 # install
 RUN apt-get update && \
-    apt-get install -y --force-yes unzip unrar-free mediainfo curl nginx wget ffmpeg supervisor subversion gcc make checkinstall git automake && \
+    apt-get install -y --force-yes unzip unrar-free mediainfo curl nginx wget supervisor subversion gcc make \
+    checkinstall git automake libtool libcppunit-dev zlib1g-dev libssl-dev build-essential autoconf libncurses5-dev \
+    libncursesw5-dev libcurl4-openssl-dev openssl libsigc++-2.0-dev && \
     rm -rf /var/lib/apt/lists/*
+
+RUN useradd -d /home/rtorrent -m -s /bin/bash rtorrent
 
 # Installs xmlrpc and libtorrent and rtorrent
 #RUN apt-get -y update && apt-get -y install libxmlrpc-core-c3 libxmlrpc-core-c3-dev
@@ -17,21 +21,28 @@ RUN svn co https://xmlrpc-c.svn.sourceforge.net/svnroot/xmlrpc-c/advanced/ xmlrp
 WORKDIR /root/svn/xmlrpc-c
 RUN ./configure --disable-cplusplus && \
     make && \
-    checkinstall -D
+    make install
 WORKDIR /root/svn
-RUN git clone https://github.com/rakshasa/libtorrent
-WORKDIR /root/svn/libtorrent
+#RUN git clone https://github.com/rakshasa/libtorrent
+RUN wget https://github.com/rakshasa/libtorrent/archive/0.13.4.tar.gz -O libtorrent.tar.gz
+RUN tar xvf libtorrent.tar.gz
+WORKDIR /root/svn/libtorrent-0.13.4
 RUN ./autogen.sh && \
     ./configure && \
     make && \
-    checkinstall -D
+    make install
 WORKDIR /root/svn
-RUN git clone https://github.com/rakshasa/rtorrent
-WORKDIR /root/svn/rtorrent
+#RUN git clone https://github.com/rakshasa/rtorrent
+RUN wget http://rtorrent.net/downloads/rtorrent-0.9.4.tar.gz -O rtorrent.tar.gz
+RUN tar xvf rtorrent.tar.gz
+RUN apt-get update && \
+    apt-get install -y --force-yes libsigc++-2.0-0c2a libcurl3-dev && \
+    rm -rf /var/lib/apt/lists/*
+WORKDIR /root/svn/rtorrent-0.9.4
 RUN ./autogen.sh && \
     ./configure --with-xmlrpc-c && \
     make && \
-    checkinstall -D
+    make install
 RUN echo "include /usr/local/lib" | tee -a /etc/ld.so.conf && \
     ldconfig
 
@@ -39,7 +50,7 @@ RUN echo "include /usr/local/lib" | tee -a /etc/ld.so.conf && \
 ADD xmlrpc.nginx /root/
 
 # configure rtorrent
-RUN useradd -d /home/rtorrent -m -s /bin/bash rtorrent
+#RUN useradd -d /home/rtorrent -m -s /bin/bash rtorrent
 ADD .rtorrent.rc /home/rtorrent/
 RUN chown -R rtorrent:rtorrent /home/rtorrent
 
