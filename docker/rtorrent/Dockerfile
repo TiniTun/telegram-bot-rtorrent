@@ -46,6 +46,8 @@ RUN ./autogen.sh && \
 RUN echo "include /usr/local/lib" | tee -a /etc/ld.so.conf && \
     ldconfig
 
+WORKDIR /root
+RUN rm -rf svn
 # configure nginx
 ADD xmlrpc.nginx /root/
 
@@ -56,6 +58,7 @@ RUN chown -R rtorrent:rtorrent /home/rtorrent
 
 # add startup script
 ADD startup.sh /root/
+RUN chmod +x /root/startup.sh
 
 # configure supervisor
 ADD supervisord.conf /etc/supervisor/conf.d/
