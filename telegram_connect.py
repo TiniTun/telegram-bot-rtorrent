@@ -50,10 +50,10 @@ def check_updates():
 
 def run_command(offset, name, from_id, cmd):
     if cmd == '/ping':  # Ответ на ping
-        send_text(from_id, 'pong')  # Отправка ответа
+        send_text(from_id, 'pong work')  # Отправка ответа
 
     elif cmd == '/help':  # Ответ на help
-        send_text(from_id, 'No help today. Sorry.')  # Ответ
+        send_text(from_id, Settings.baseDir)  # Ответ
 
     elif 'file_id' in cmd:  # Действие если прислан файл
         request = requests_http('/getFile', {'file_id': cmd['file_id']})

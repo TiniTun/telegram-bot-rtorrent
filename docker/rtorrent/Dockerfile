@@ -64,7 +64,9 @@ RUN chmod +x /root/startup.sh
 ADD supervisord.conf /etc/supervisor/conf.d/
 
 EXPOSE 80
+EXPOSE 5000
 EXPOSE 49160
 EXPOSE 49161
+VOLUME /downloads
 
-CMD ["supervisord"]
+CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf", "-n"]
